@@ -1,6 +1,6 @@
 # 熱盛ジェネレーター
 
-[https:/totoraj930.github.io/atumori](https:/totoraj930.github.io/atumori)
+[https://totoraj930.github.io/atumori](https://totoraj930.github.io/atumori)
 
 ## 使用ライブラリ
 
