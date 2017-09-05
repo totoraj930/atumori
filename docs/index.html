@@ -9,7 +9,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
 	<script src="js/spectrum/spectrum.min.js"></script>
-	<script src="js/atumori.js?v=0.0.1"></script>
+	<script src="js/atumori.js?v=0.0.2"></script>
 	<script src="js/main.js?v=0.0.1"></script>
 </head>
 <body>
@@ -41,7 +41,6 @@
 						stroke-width: 8px;
 					}
 					#am_text {
-						stroke-width: 2px;
 						font-size: 100px;
 						writing-mode: lr-tb;
 						text-anchor: middle;
@@ -58,11 +57,17 @@
 					#am_sub_text_back {
 						stroke: none;
 					}
+					.fw-b {
+						stroke-width: 2px;
+					}
+					.fw-n {
+						stroke-width: 0px;
+					}
 				</style>
 				<g id="am_g" transform="">
 					<path id="am_path_1" d=""></path>
 					<path id="am_path_2" d="" stroke="#ff3201"></path>
-					<text id="am_text" fill="#ff3201" stroke="#ff3201"></text>
+					<text id="am_text" fill="#ff3201" stroke="#ff3201" class="fw-n"></text>
 					<rect id="am_sub_text_back" fill="#ff3201"></rect>
 					<text id="am_sub_text" fill="#fff" stroke="#fff"></text>
 				</g>
@@ -77,6 +82,10 @@
 					<div>
 						<label for="i_text">文字</label>
 						<input type="text" id="i_text" class="am_option" data-op="text">
+					</div>
+					<div>
+						<label for="text_bold" class="w-70">太くする</label>
+						<input type="checkbox" id="text_bold" class="am_option">
 					</div>
 				</div>
 				<div class="op-body">

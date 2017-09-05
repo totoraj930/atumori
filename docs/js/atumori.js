@@ -17,9 +17,10 @@ var ops = {
 	pathW:  {val: 210, on: resizePath, type: "number"},
 	pathH:  {val: 110, on: resizePath, type: "number"},
 	pathR:  {val:  30},
-	angle: {val:  -10, on: updateAngle, type: "number"}
+	angle:  {val:  -10, on: updateAngle, type: "number"}
 };
-var editMode = false;
+var editMode = false,
+	textBold = true;
 var $p = {
 	canvas: "#save_canvas",
 	svg: "#view",
@@ -47,6 +48,9 @@ function initSvg() {
 	$p.svg.attr("height", svgH);
 	$p.text.attr("x", svgW/2);
 	$p.text.attr("y", svgH/2);
+	$p.svg.on("click", function (event) {
+		console.log(event);
+	});
 
 	$(".ready").text("フォントの準備中・・・");
 	$(".ready").fadeIn(200);
@@ -67,6 +71,7 @@ function initOption() {
 	});
 	$(".auto_button").on("click", autoAdjust);
 	$("#edit_mode").on("change keyup", updateColor);
+	$("#text_bold").on("change keyup", updateText);
 	$(".input_color").each(function () {
 		var key = $(this).attr("data-op");
 		if (!color.hasOwnProperty(key)) return;
@@ -113,6 +118,8 @@ function updateOptionInput() {
 		if (!ops.hasOwnProperty(key)) return;
 		$(this).val(ops[key].val);
 	});
+	$("#edit_mode").prop("checked", editMode);
+	$("#text_bold").prop("checked", textBold);
 }
 
 function checkSender($sender) {
@@ -129,6 +136,13 @@ function checkSender($sender) {
 }
 function updateText() {
 	checkSender($(this));
+	var bold = $("#text_bold").prop("checked");
+	$p.text.removeClass("fw-n fw-b");
+	if (bold) {
+		$p.text.addClass("fw-b");
+	} else {
+		$p.text.addClass("fw-n");
+	}
 	$p.text.text(ops.text.val);
 	$p.sText.text(ops.sText.val);
 	$p.sText.attr("x", ops.sTextX.val);
@@ -272,22 +286,6 @@ function getRandomShift(limit) {
 	return n;
 }
 
-function showSavePanel () {
-
-}
-
-function test() {
-	var c = $p.canvas[0],
-		ctx = c.getContext("2d"),
-		mag = 2,
-		margin = 20,
-		x = ops.pathW.val,
-		y = ops.pathH.val,
-		r = Math.sqrt(x*x+y*y),
-		rad = Math.atan2(x, y)+Math.abs(ops.angle.val)/180*Math.PI,
-		w = Math.round(r * Math.sin(rad))*mag+margin,
-		h = Math.round(r * Math.cos(rad))*mag+margin;
-}
 function exportToImage() {
 	var c = $p.canvas[0],
 		ctx = c.getContext("2d"),
@@ -322,6 +320,7 @@ function exportToImage() {
 //			h = Math.round(r * Math.cos(rad1-rad2))*2;
 	});
 }
+
 function convertFont(url, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.responseType = "blob";
@@ -367,11 +366,3 @@ function dataURLtoBlob (dataURL) {
 
 	return new Blob([ia], {type: mimeString});
 }
-
-
-
-var workerScript = function() {
-
-}
-
-
