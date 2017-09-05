@@ -308,7 +308,7 @@ function exportToImage() {
 		c.width = cw;
 		c.height = ch;
 		ctx.clearRect(0, 0, cw, ch);
-		ctx.fillStyle = color.back;
+		ctx.fillStyle = color.save;
 		ctx.fillRect(0, 0, c.width, c.height);
 		ctx.drawImage(image, (iw-pLen)/2, (ih-pLen)/2, pLen, pLen, 0, 0, cw, ch);
 		var cBlob = dataURLtoBlob(c.toDataURL());
