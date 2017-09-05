@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>熱盛ジェネレーター</title>
+	<link rel="stylesheet" href="js/spectrum/spectrum.min.css">
+	<link rel="stylesheet" href="css/main.css?v=0.0.1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+	<script src="js/spectrum/spectrum.min.js"></script>
+	<script src="js/atumori.js?v=0.0.1"></script>
+	<script src="js/main.js?v=0.0.1"></script>
+</head>
+<body>
+	<header class="head">
+		<div class="head-inner">
+			<h1>熱盛ジェネレーター</h1>
+			<ul class="head-link">
+				<li><span>トップ</span></li>
+				<li><a href="./about.html">使い方</a></li>
+			</ul>
+		</div>
+	</header>
+	<div class="center">
+		<section class="view-section">
+			<canvas id="save_canvas" style="display:none"></canvas>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" id="view">
+				<style id="svg_font"></style>
+				<style>
+					#am_text,
+					#am_sub_text {
+						font-family: "NotoSans", sans-serif;
+						font-weight: bold;
+					}
+					#am_path_1 {
+						stroke: none;
+					}
+					#am_path_2 {
+						fill: none;
+						stroke-width: 8px;
+					}
+					#am_text {
+						stroke-width: 2px;
+						font-size: 100px;
+						writing-mode: lr-tb;
+						text-anchor: middle;
+						dominant-baseline: middle;
+					}
+					#am_sub_text {
+						stroke-width: 0.5px;
+						font-size: 18px;
+						writing-mode: lr-tb;
+						text-anchor: middle;
+						dominant-baseline: middle;
+						font-weight: bold;
+					}
+					#am_sub_text_back {
+						stroke: none;
+					}
+				</style>
+				<g id="am_g" transform="">
+					<path id="am_path_1" d=""></path>
+					<path id="am_path_2" d="" stroke="#ff3201"></path>
+					<text id="am_text" fill="#ff3201" stroke="#ff3201"></text>
+					<rect id="am_sub_text_back" fill="#ff3201"></rect>
+					<text id="am_sub_text" fill="#fff" stroke="#fff"></text>
+				</g>
+			</svg>
+			<button id="save" class="save-button">保存</button>
+		</section>
+		<section class="option-section">
+			<div class="op-wrap">
+				<h2>文字の設定</h2>
+				<div class="op-body">
+					<h3>メイン</h3>
+					<div>
+						<label for="i_text">文字</label>
+						<input type="text" id="i_text" class="am_option" data-op="text">
+					</div>
+				</div>
+				<div class="op-body">
+					<h3>サブ</h3>
+					<div>
+						<label for="i_sText">文字</label>
+						<input type="text" id="i_sText" class="am_option" data-op="sText">
+					</div>
+					<div>
+						<label for="i_sTextX">X</label>
+						<input type="number" id="i_sTextX" class="am_option" data-op="sTextX">
+						<label for="i_sTextY">Y</label>
+						<input type="number" id="i_sTextY" class="am_option" data-op="sTextY">
+					</div>
+				</div>
+			</div>
+			<div class="op-wrap">
+				<h2>枠の設定</h2>
+				<div class="op-body">
+					<h3>メイン枠</h3>
+					<div>
+						<label for="i_pathX">X</label>
+						<input type="number" id="i_pathX" class="am_option" data-op="pathX">
+						<label for="i_pathY">Y</label>
+						<input type="number" id="i_pathY" class="am_option" data-op="pathY">
+					</div>
+					<div>
+						<label for="i_pathW">横幅</label>
+						<input type="number" id="i_pathW" class="am_option" data-op="pathW">
+						<label for="i_pathH">縦幅</label>
+						<input type="number" id="i_pathH" class="am_option" data-op="pathH">
+					</div>
+					<div class="ta-center">
+						<button class="auto_button" data-op="main">自動調節</button>
+					</div>
+				</div>
+				<div class="op-body">
+					<h3>サブ文字の背景</h3>
+					<div>
+						<label for="i_sBackX">X</label>
+						<input type="number" id="i_sBackX" class="am_option" data-op="sBackX">
+						<label for="i_sBackY">Y</label>
+						<input type="number" id="i_sBackY" class="am_option" data-op="sBackY">
+					</div>
+					<div>
+						<label for="i_sBackW">横幅</label>
+						<input type="number" id="i_sBackW" class="am_option" data-op="sBackW">
+						<label for="i_sBackH">縦幅</label>
+						<input type="number" id="i_sBackH" class="am_option" data-op="sBackH">
+					</div>
+					<div class="ta-center">
+						<button class="auto_button" data-op="sub">自動調節</button>
+					</div>
+				</div>
+			</div>
+			<div class="op-wrap">
+				<h2>色の設定</h2>
+				<div class="op-body">
+					<div>
+						<label for="i_mainColor" class="w-70">メイン</label>
+						<input type="text" id="i_mainColor" class="input_color" data-op="main">
+					</div>
+					<div>
+						<label for="i_subColor" class="w-70">サブ</label>
+						<input type="text" id="i_subColor" class="input_color" data-op="sub">
+					</div>
+					<div>
+						<label for="i_backColor" class="w-70">背景</label>
+						<input type="text" id="i_backColor" class="input_color" data-op="back">
+					</div>
+					<div>
+						<label for="edit_mode" class="w-auto">編集モード</label>
+						<input type="checkbox" id="edit_mode">
+					</div>
+				</div>
+				<h2>その他</h2>
+				<div class="op-body">
+					<div>
+						<label for="i_angle">角度</label>
+						<input type="number" id=i_angle, class="am_option" data-op="angle" min="-360" max="360">
+					</div>
+					<div>
+						<label for="i_saveColor" class="w-auto">保存時背景色</label>
+						<input type="text" id="i_saveColor" class="input_color" data-op="save">
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+	<footer class="foot">
+		<div class="foot-inner">
+			<p class="copyright">
+				&copy; 2017 totoraj. All rights reserved. This site was created by totoraj.
+			</p>
+		</div>
+	</footer>
+	<p class="ready"></p>
+</body>
+</html>
