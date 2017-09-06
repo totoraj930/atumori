@@ -6,21 +6,22 @@ var fontBase64;
 var ops = {
 	text:   {val: "熱盛", on: updateText, type: "string"},
 	sText:  {val: "アツモリ", on: updateText, type: "string"},
-	sTextX: {val: 451, on: updateText, type: "number"},
-	sTextY: {val: 168, on: updateText, type: "number"},
-	sBackX: {val: 410, on: updateSubBack, type: "number"},
-	sBackY: {val: 150, on: updateSubBack, type: "number"},
-	sBackW: {val:  81, on: updateSubBack, type: "number"},
-	sBackH: {val:  30, on: updateSubBack, type: "number"},
-	pathX:  {val: 295, on: movePath, type: "number"},
-	pathY:  {val:  84, on: movePath, type: "number"},
-	pathW:  {val: 210, on: resizePath, type: "number"},
-	pathH:  {val: 110, on: resizePath, type: "number"},
+	sTextX: {val: 451, on: updateText, type: "number", max: svgW},
+	sTextY: {val: 168, on: updateText, type: "number", max: svgH},
+	sBackX: {val: 410, on: updateSubBack, type: "number", max: svgW},
+	sBackY: {val: 150, on: updateSubBack, type: "number", max: svgH},
+	sBackW: {val:  81, on: updateSubBack, type: "number", max: 1000},
+	sBackH: {val:  30, on: updateSubBack, type: "number", max: 400},
+	pathX:  {val: 295, on: movePath, type: "number", max: svgW},
+	pathY:  {val:  84, on: movePath, type: "number", max: svgH},
+	pathW:  {val: 210, on: resizePath, type: "number", max: 1000},
+	pathH:  {val: 110, on: resizePath, type: "number", max: 400},
 	pathR:  {val:  30},
 	angle:  {val:  -10, on: updateAngle, type: "number"}
 };
 var editMode = false,
-	textBold = true;
+	textBold = true,
+	moveTarget = 0;
 var $p = {
 	canvas: "#save_canvas",
 	svg: "#view",
@@ -48,9 +49,6 @@ function initSvg() {
 	$p.svg.attr("height", svgH);
 	$p.text.attr("x", svgW/2);
 	$p.text.attr("y", svgH/2);
-	$p.svg.on("click", function (event) {
-		console.log(event);
-	});
 
 	$(".ready").text("フォントの準備中・・・");
 	$(".ready").fadeIn(200);
@@ -64,14 +62,32 @@ function initSvg() {
 }
 function initOption() {
 	$("#save").on("click", exportToImage);
+	$("#save_old").on("click", function () {
+		exportToImage(true);
+	});
 	$(".am_option").each(function () {
 		var key = $(this).attr("data-op");
 		if (!ops.hasOwnProperty(key)) return;
-		$(this).on("change keyup", ops[key].on);
+		$(this).on("change keyup", onChangeOption);
+		if (ops[key].type == "number") {
+			$(this).attr("min", 0);
+			$(this).attr("max", ops[key].max);
+		}
+
 	});
 	$(".auto_button").on("click", autoAdjust);
 	$("#edit_mode").on("change keyup", updateColor);
 	$("#text_bold").on("change keyup", updateText);
+	$("#move_target").on("change", function () {
+		moveTarget = $(this).val();
+		if (moveTarget == 0) {
+			$(".move-bar-wrap").fadeOut(200);
+		} else {
+			$(".move-bar-wrap").fadeIn(200);
+		}
+		updateMoveBar();
+
+	});
 	$(".input_color").each(function () {
 		var key = $(this).attr("data-op");
 		if (!color.hasOwnProperty(key)) return;
@@ -93,7 +109,9 @@ function initOption() {
 			}
 		});
 	});
+	initMoveBar(onChangeMoveBar);
 	updateOptionInput();
+	updateMoveBar();
 }
 
 function setDom(obj) {
@@ -120,22 +138,50 @@ function updateOptionInput() {
 	});
 	$("#edit_mode").prop("checked", editMode);
 	$("#text_bold").prop("checked", textBold);
+	$("#move_target").val(moveTarget);
 }
 
-function checkSender($sender) {
-	var key = $sender.attr("data-op");
-	if (ops.hasOwnProperty(key)) {
-		var val = $sender.val();
-		if (val != "" && ops[key].type == "number") {
-			ops[key].val = $sender.val()-0;
-		}
-		else if (ops[key].type == "string") {
-			ops[key].val = $sender.val();
-		}
-	};
+function updateMoveBar() {
+	var t = moveTarget,
+		x = 0,
+		y = 0,
+		w = 0,
+		h = 0;
+	if (t == 1) {
+		x = ops.sTextX.val;
+		y = ops.sTextY.val;
+		w = ops.sTextX.max;
+		h = ops.sTextY.max;
+	}
+	else if (t == 2) {
+		x = ops.sBackX.val;
+		y = ops.sBackY.val;
+		w = ops.sBackX.max;
+		h = ops.sBackY.max;
+	}
+	else if (t == 3) {
+		x = ops.pathX.val;
+		y = ops.pathY.val;
+		w = ops.pathX.max;
+		h = ops.pathY.max;
+	}
+	else if (t == 4) {
+		x = ops.pathW.val;
+		y = ops.pathH.val;
+		w = ops.pathW.max;
+		h = ops.pathH.max;
+	}
+	else if (t == 5) {
+		x = ops.sBackW.val;
+		y = ops.sBackH.val;
+		w = ops.sBackW.max;
+		h = ops.sBackH.max;
+	}
+
+	setMoveBar(x/w, y/h);
 }
+
 function updateText() {
-	checkSender($(this));
 	var bold = $("#text_bold").prop("checked");
 	$p.text.removeClass("fw-n fw-b");
 	if (bold) {
@@ -150,7 +196,6 @@ function updateText() {
 }
 
 function updateSubBack() {
-	checkSender($(this));
 	$p.sBack.attr("x", ops.sBackX.val);
 	$p.sBack.attr("y", ops.sBackY.val);
 	$p.sBack.attr("width", ops.sBackW.val);
@@ -158,7 +203,6 @@ function updateSubBack() {
 }
 
 function resizePath() {
-	checkSender($(this));
 	var d = createRectPathD(
 		ops.pathX.val, ops.pathY.val,
 		ops.pathW.val, ops.pathH.val,
@@ -168,7 +212,6 @@ function resizePath() {
 }
 
 function movePath() {
-	checkSender($(this));
 	$p.path1.attr("d", getMovePathD($p.path1, ops.pathX.val, ops.pathY.val));
 	$p.path2.attr("d", getMovePathD($p.path2, ops.pathX.val, ops.pathY.val));
 }
@@ -198,10 +241,71 @@ function updateColor() {
 }
 
 function updateAngle() {
-	checkSender($(this));
 	$p.g.attr("transform",
 		"rotate("+
 		ops.angle.val+","+svgW/2+","+svgH/2+")");
+}
+
+function onChangeOption(event) {
+	var key = $(this).attr("data-op");
+	if (ops.hasOwnProperty(key)) {
+		var val = $(this).val();
+		if (val != "" && ops[key].type == "number") {
+			val = val-0;
+			if (val > ops[key].max || val < 0) return;
+			ops[key].val = $(this).val()-0;
+			updateMoveBar();
+		}
+		else if (ops[key].type == "string") {
+			ops[key].val = $(this).val();
+		}
+		ops[key].on();
+	};
+}
+
+function onChangeMoveBar(per, dir) {
+	var t = moveTarget;
+	if (t == 1) {
+		if (dir == "x") {
+			ops.sTextX.val = Math.round(ops.sTextX.max*per);
+		} else {
+			ops.sTextY.val = Math.round(ops.sTextY.max*per);
+		}
+		ops.sTextX.on();
+	}
+	else if (t == 2) {
+		if (dir == "x") {
+			ops.sBackX.val = Math.round(ops.sBackX.max*per);
+		} else {
+			ops.sBackY.val = Math.round(ops.sBackY.max*per);
+		}
+		ops.sBackX.on();
+	}
+	else if (t == 3) {
+		if (dir == "x") {
+			ops.pathX.val = Math.round(ops.pathX.max*per);
+		} else {
+			ops.pathY.val = Math.round(ops.pathY.max*per);
+		}
+		ops.pathX.on();
+	}
+	else if (t == 4) {
+		if (dir == "x") {
+			ops.pathW.val = Math.round(ops.pathW.max*per);
+		} else {
+			ops.pathH.val = Math.round(ops.pathH.max*per);
+		}
+		ops.pathW.on();
+	}
+	else if (t == 5) {
+		if (dir == "x") {
+			ops.sBackW.val = Math.round(ops.sBackW.max*per);
+		} else {
+			ops.sBackH.val = Math.round(ops.sBackH.max*per);
+		}
+		ops.sBackW.on();
+	}
+	updateOptionInput();
 }
 
 function autoAdjust() {
@@ -223,6 +327,7 @@ function autoAdjust() {
 		updateSubBack();
 	}
 	updateOptionInput();
+	updateMoveBar();
 }
 
 function createRectPathD(x, y, w, h, r) {
@@ -286,7 +391,7 @@ function getRandomShift(limit) {
 	return n;
 }
 
-function exportToImage() {
+function exportToImage(oldType) {
 	var c = $p.canvas[0],
 		ctx = c.getContext("2d"),
 		mag = 2;
@@ -309,8 +414,15 @@ function exportToImage() {
 		ctx.fillStyle = color.save;
 		ctx.fillRect(0, 0, c.width, c.height);
 		ctx.drawImage(image, (iw-pLen)/2, (ih-pLen)/2, pLen, pLen, 0, 0, cw, ch);
-		var cBlob = dataURLtoBlob(c.toDataURL());
-		downloadFile(URL.createObjectURL(cBlob), new Date().getTime());
+		if (oldType) {
+			var cUrl = c.toDataURL();
+			downloadFile(cUrl, new Date().getTime());
+			$("#save_old_area").fadeIn(300);
+			$("#save_old_area img").attr("src", cUrl);
+		} else {
+			var cBlob = dataURLtoBlob(c.toDataURL());
+			downloadFile(URL.createObjectURL(cBlob), new Date().getTime());
+		}
 //		var x = pw,
 //			y = ph,
 //			r = Math.sqrt(x*x+y*y),

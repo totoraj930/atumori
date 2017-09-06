@@ -5,12 +5,12 @@
 	<meta name="viewport" content="width=device-width">
 	<title>熱盛ジェネレーター</title>
 	<link rel="stylesheet" href="js/spectrum/spectrum.min.css">
-	<link rel="stylesheet" href="css/main.css?v=0.0.1">
+	<link rel="stylesheet" href="css/main.css?v=0.0.3">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
 	<script src="js/spectrum/spectrum.min.js"></script>
-	<script src="js/atumori.js?v=0.0.2"></script>
-	<script src="js/main.js?v=0.0.1"></script>
+	<script src="js/movebar.js?v=0.0.3"></script>
+	<script src="js/atumori.js?v=0.0.3"></script>
+	<script src="js/main.js?v=0.0.3"></script>
 </head>
 <body>
 	<header class="head">
@@ -24,6 +24,18 @@
 	</header>
 	<div class="center">
 		<section class="view-section">
+			<div class="move-bar-wrap" style="display: none">
+				<div class="move-bar x">
+					<div class="move-bar-range move_bar" data-dir="x">
+						<div class="move-bar-point"></div>
+					</div>
+				</div>
+				<div class="move-bar y">
+					<div class="move-bar-range move_bar" data-dir="y">
+						<div class="move-bar-point"></div>
+					</div>
+				</div>
+			</div>
 			<canvas id="save_canvas" style="display:none"></canvas>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" id="view">
 				<style id="svg_font"></style>
@@ -72,9 +84,24 @@
 					<text id="am_sub_text" fill="#fff" stroke="#fff"></text>
 				</g>
 			</svg>
-			<button id="save" class="save-button">保存</button>
 		</section>
 		<section class="option-section">
+			<div class="op-wrap2">
+					<div class="move-target-wrap">
+						<label for="move_target">編集ターゲット:</label>
+						<select name="move_target" id="move_target" class="select-1">
+							<option value="0">なし</option>
+							<option value="1">サブ文字:位置</option>
+							<option value="2">サブ背景:位置</option>
+							<option value="3">メイン枠:位置</option>
+							<option value="4">メイン枠:サイズ</option>
+							<option value="5">サブ背景:サイズ</option>
+						</select>
+					</div>
+					<div>
+						<button id="save" class="save-button">保存</button>
+					</div>
+			</div>
 			<div class="op-wrap">
 				<h2>文字の設定</h2>
 				<div class="op-body">
@@ -170,6 +197,14 @@
 					<div>
 						<label for="i_saveColor" class="w-auto">保存時背景色</label>
 						<input type="text" id="i_saveColor" class="input_color" data-op="save">
+					</div>
+					<div>
+						<a href="javascript:void(0)" id="save_old">保存ボタンが使えない方はこちら</a>
+						<div id="save_old_area" style="display: none">
+							<p>ダウンロードが開始されない場合は下の画像から保存してください。</p>
+							<p>下に画像が表示されない場合はあきらめてください！</p>
+							<img src="" alt="Download用">
+						</div>
 					</div>
 				</div>
 			</div>
