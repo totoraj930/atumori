@@ -17,7 +17,7 @@ var ops = {
 	pathW:  {val: 210, on: resizePath, type: "number", max: 1000},
 	pathH:  {val: 110, on: resizePath, type: "number", max: 400},
 	pathR:  {val:  30},
-	angle:  {val:  -10, on: updateAngle, type: "number"}
+	angle:  {val:  -10, on: updateAngle, type: "number", max: 360, min: -360}
 };
 var editMode = false,
 	textBold = true,
@@ -70,8 +70,10 @@ function initOption() {
 		if (!ops.hasOwnProperty(key)) return;
 		$(this).on("change keyup", onChangeOption);
 		if (ops[key].type == "number") {
-			$(this).attr("min", 0);
-			$(this).attr("max", ops[key].max);
+			if (ops[key].hasOwnProperty("max")) {
+				$(this).attr("max", ops[key].max);
+			}
+			$(this).attr("min", ops[key].min | 0);
 		}
 
 	});
