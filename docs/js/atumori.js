@@ -254,7 +254,7 @@ function onChangeOption(event) {
 		var val = $(this).val();
 		if (val != "" && ops[key].type == "number") {
 			val = val-0;
-			if (val > ops[key].max || val < 0) return;
+			if (val > ops[key].max || val < (ops[key].min | 0)) return;
 			ops[key].val = $(this).val()-0;
 			updateMoveBar();
 		}
