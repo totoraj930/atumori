@@ -61,7 +61,9 @@ function initSvg() {
 	});
 }
 function initOption() {
-	$("#save").on("click", exportToImage);
+	$("#save").on("click", function () {
+		exportToImage(false);
+	});
 	$("#save_old").on("click", function () {
 		exportToImage(true);
 	});
