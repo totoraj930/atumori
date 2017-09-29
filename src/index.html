@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>熱盛ジェネレーター</title>
+	<link rel="stylesheet" href="js/spectrum/spectrum.min.css">
+	<link rel="stylesheet" href="css/main.css?v=0.0.4">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="js/spectrum/spectrum.min.js"></script>
+	<script src="js/movebar.js?v=0.0.4"></script>
+	<script src="js/atumori.js?v=0.0.6"></script>
+	<script src="js/main.js?v=0.0.4"></script>
+</head>
+<body>
+	<header class="head">
+		<div class="head-inner">
+			<h1>熱盛ジェネレーター</h1>
+			<ul class="head-link">
+				<li><span>トップ</span></li>
+				<li><a href="./about.html">使い方</a></li>
+			</ul>
+		</div>
+	</header>
+	<div class="center">
+		<section class="view-section">
+			<div class="move-bar-wrap" style="display: none">
+				<div class="move-bar x">
+					<div class="move-bar-range move_bar" data-dir="x">
+						<div class="move-bar-point"></div>
+					</div>
+				</div>
+				<div class="move-bar y">
+					<div class="move-bar-range move_bar" data-dir="y">
+						<div class="move-bar-point"></div>
+					</div>
+				</div>
+			</div>
+			<canvas id="save_canvas" style="display:none"></canvas>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" id="view">
+				<style id="svg_font"></style>
+				<style>
+					#am_text,
+					#am_sub_text {
+						font-family: "NotoSans", sans-serif;
+						font-weight: bold;
+					}
+					#am_path_1 {
+						stroke: none;
+					}
+					#am_path_2 {
+						fill: none;
+						stroke-width: 8px;
+					}
+					#am_text {
+						font-size: 100px;
+						writing-mode: lr-tb;
+						text-anchor: middle;
+						dominant-baseline: middle;
+					}
+					#am_sub_text {
+						stroke-width: 0.5px;
+						font-size: 18px;
+						writing-mode: lr-tb;
+						text-anchor: middle;
+						dominant-baseline: middle;
+						font-weight: bold;
+					}
+					#am_sub_text_back {
+						stroke: none;
+					}
+					.fw-b {
+						stroke-width: 2px;
+					}
+					.fw-n {
+						stroke-width: 0px;
+					}
+				</style>
+				<g id="am_g" transform="">
+					<path id="am_path_1" d=""></path>
+					<path id="am_path_2" d="" stroke="#ff3201"></path>
+					<text id="am_text" fill="#ff3201" stroke="#ff3201" class="fw-n"></text>
+					<rect id="am_sub_text_back" fill="#ff3201"></rect>
+					<text id="am_sub_text" fill="#fff" stroke="#fff"></text>
+				</g>
+			</svg>
+		</section>
+		<section class="option-section">
+			<div class="op-wrap2">
+					<div class="move-target-wrap">
+						<label for="move_target">編集ターゲット:</label>
+						<select name="move_target" id="move_target" class="select-1">
+							<option value="0">選択してください</option>
+							<option value="1">サブ文字:位置</option>
+							<option value="2">サブ背景:位置</option>
+							<option value="3">メイン枠:位置</option>
+							<option value="4">メイン枠:サイズ</option>
+							<option value="5">サブ背景:サイズ</option>
+						</select>
+					</div>
+					<div>
+						<button id="save" class="save-button">保存</button>
+					</div>
+			</div>
+			<div class="op-wrap">
+				<h2>文字の設定</h2>
+				<div class="op-body">
+					<h3>メイン</h3>
+					<div>
+						<label for="i_text">文字</label>
+						<input type="text" id="i_text" class="am_option" data-op="text">
+					</div>
+					<div>
+						<label for="text_bold" class="w-70">太くする</label>
+						<input type="checkbox" id="text_bold" class="am_option">
+					</div>
+				</div>
+				<div class="op-body">
+					<h3>サブ</h3>
+					<div>
+						<label for="i_sText">文字</label>
+						<input type="text" id="i_sText" class="am_option" data-op="sText">
+					</div>
+					<div>
+						<label for="i_sTextX">X</label>
+						<input type="number" id="i_sTextX" class="am_option" data-op="sTextX">
+						<label for="i_sTextY">Y</label>
+						<input type="number" id="i_sTextY" class="am_option" data-op="sTextY">
+					</div>
+				</div>
+			</div>
+			<div class="op-wrap">
+				<h2>枠の設定</h2>
+				<div class="op-body">
+					<h3>メイン枠</h3>
+					<div>
+						<label for="i_pathX">X</label>
+						<input type="number" id="i_pathX" class="am_option" data-op="pathX">
+						<label for="i_pathY">Y</label>
+						<input type="number" id="i_pathY" class="am_option" data-op="pathY">
+					</div>
+					<div>
+						<label for="i_pathW">横幅</label>
+						<input type="number" id="i_pathW" class="am_option" data-op="pathW">
+						<label for="i_pathH">縦幅</label>
+						<input type="number" id="i_pathH" class="am_option" data-op="pathH">
+					</div>
+					<div class="ta-center">
+						<button class="auto_button" data-op="main">自動調節</button>
+					</div>
+				</div>
+				<div class="op-body">
+					<h3>サブ文字の背景</h3>
+					<div>
+						<label for="i_sBackX">X</label>
+						<input type="number" id="i_sBackX" class="am_option" data-op="sBackX">
+						<label for="i_sBackY">Y</label>
+						<input type="number" id="i_sBackY" class="am_option" data-op="sBackY">
+					</div>
+					<div>
+						<label for="i_sBackW">横幅</label>
+						<input type="number" id="i_sBackW" class="am_option" data-op="sBackW">
+						<label for="i_sBackH">縦幅</label>
+						<input type="number" id="i_sBackH" class="am_option" data-op="sBackH">
+					</div>
+					<div class="ta-center">
+						<button class="auto_button" data-op="sub">自動調節</button>
+					</div>
+				</div>
+			</div>
+			<div class="op-wrap">
+				<h2>色の設定</h2>
+				<div class="op-body">
+					<div>
+						<label for="i_mainColor" class="w-70">メイン</label>
+						<input type="text" id="i_mainColor" class="input_color" data-op="main">
+					</div>
+					<div>
+						<label for="i_subColor" class="w-70">サブ</label>
+						<input type="text" id="i_subColor" class="input_color" data-op="sub">
+					</div>
+					<div>
+						<label for="i_backColor" class="w-70">背景</label>
+						<input type="text" id="i_backColor" class="input_color" data-op="back">
+					</div>
+					<div>
+						<label for="edit_mode" class="w-auto">編集モード</label>
+						<input type="checkbox" id="edit_mode">
+					</div>
+				</div>
+				<h2>その他</h2>
+				<div class="op-body">
+					<div>
+						<label for="i_angle">角度</label>
+						<input type="number" id=i_angle, class="am_option" data-op="angle" min="-360" max="360">
+					</div>
+					<div>
+						<label for="i_saveColor" class="w-auto">保存時背景色</label>
+						<input type="text" id="i_saveColor" class="input_color" data-op="save">
+					</div>
+					<div>
+						<a href="javascript:void(0)" id="save_old">保存ボタンが使えない方はこちら</a>
+						<div id="save_old_area" style="display: none">
+							<p>ダウンロードが開始されない場合は下の画像から保存してください。</p>
+							<p>下に画像が表示されない場合はあきらめてください！</p>
+							<img src="" alt="Download用">
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+	<footer class="foot">
+		<div class="foot-inner">
+			<p class="copyright">
+				&copy; 2017 totoraj. All rights reserved. This site was created by totoraj.
+			</p>
+		</div>
+	</footer>
+	<p class="ready"></p>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51200053-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>

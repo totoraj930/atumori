@@ -1,6 +1,8 @@
 # 熱盛ジェネレーター
 
-[https://totoraj930.github.io/atumori](https://totoraj930.github.io/atumori)
+「熱盛」が商標登録されたため公開停止
+
+ソースコードも削除予定
 
 ## 使用ライブラリ
 
